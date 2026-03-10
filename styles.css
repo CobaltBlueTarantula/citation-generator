@@ -1,0 +1,136 @@
+:root {
+    --accent-hue: 207;
+    --accent-dark: hsl(var(--accent-hue), 70%, 25%);
+    --accent-mid: hsl(var(--accent-hue), 70%, 45%);
+    --accent-hover: hsl(var(--accent-hue), 70%, 35%);
+    --accent-bg: hsl(var(--accent-hue), 35%, 95%);
+    --accent-preview: hsl(var(--accent-hue), 40%, 88%);
+    --accent-link: hsl(var(--accent-hue), 70%, 35%);
+    --error: #e05555;
+    --disabled: hsl(var(--accent-hue), 20%, 70%);
+}
+
+body {
+    font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--accent-bg);
+    padding: 20px;
+    max-width: 700px;
+    margin: auto;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+
+h1 {
+    text-align: center;
+    color: var(--accent-dark);
+    font-size: 2em;
+    transition: color 0.3s;
+}
+
+label {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+input, select, textarea, button {
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0 16px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 1em;
+}
+
+select {
+    background: white;
+    color: black;
+}
+
+select:has(option[value=""]:checked) {
+    color: #999;
+}
+
+textarea {
+    height: 90px;
+    font-family: 'Roboto', Arial, sans-serif;
+    font-size: 1em;
+}
+
+.flex-container {
+    display: flex;
+    gap: 10px;
+}
+
+.flex-container input,
+.flex-container select {
+    flex: 1;
+}
+
+#buttonContainer {
+    display: flex;
+    gap: 10px;
+}
+
+#buttonContainer button,
+#copyButton {
+    flex: 1;
+    font-size: 1.1em;
+    background-color: var(--accent-mid);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#buttonContainer button:hover,
+#copyButton:hover:not(:disabled) {
+    background-color: var(--accent-hover);
+}
+
+#copyButton:disabled {
+    background-color: var(--disabled);
+    cursor: not-allowed;
+}
+
+#citationPreview {
+    background-color: var(--accent-preview);
+    padding: 12px;
+    border-radius: 5px;
+    min-height: 60px;
+    font-family: 'Roboto', Arial, sans-serif;
+    font-size: 1em;
+    transition: background 0.3s;
+    user-select: none;
+}
+
+#citationPreview i {
+    font-style: italic;
+    color: black;
+}
+
+#citationPreview a {
+    color: var(--accent-link);
+    text-decoration: underline;
+    transition: color 0.3s;
+}
+
+#outputSection {
+    display: none;
+}
+
+.required {
+    color: var(--error);
+}
+
+.field-error {
+    border-color: var(--error) !important;
+}
+
+.error-msg {
+    color: var(--error);
+    font-size: 0.85em;
+    margin-top: -12px;
+    margin-bottom: 10px;
+    display: none;
+}

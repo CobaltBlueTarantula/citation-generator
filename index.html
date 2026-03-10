@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citation Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Citation Generator</h1>
+
+    <label>Author / Publisher:</label>
+    <div class="flex-container">
+        <input type="text" id="firstName" placeholder="First">
+        <input type="text" id="middleName" placeholder="Middle">
+        <input type="text" id="lastName" placeholder="Last">
+    </div>
+
+    <label>Publication Date:</label>
+    <div class="flex-container">
+        <input type="number" id="day" placeholder="Day" min="1" max="31">
+        <select id="month">
+            <option value="" disabled selected>Month</option>
+            <option value="January">January</option>
+            <option value="February">February</option>
+            <option value="March">March</option>
+            <option value="April">April</option>
+            <option value="May">May</option>
+            <option value="June">June</option>
+            <option value="July">July</option>
+            <option value="August">August</option>
+            <option value="September">September</option>
+            <option value="October">October</option>
+            <option value="November">November</option>
+            <option value="December">December</option>
+        </select>
+        <input type="number" id="year" placeholder="Year" min="1000" max="9999">
+    </div>
+
+    <label>Title: <span class="required">*</span></label>
+    <input type="text" id="title" placeholder="Document or Article Title">
+    <div class="error-msg" id="titleError">Please enter a title.</div>
+
+    <label>Website Title / Institution: <span class="required">*</span></label>
+    <input type="text" id="publisher" placeholder="Institution Name">
+    <div class="error-msg" id="publisherError">Please enter an institution name.</div>
+
+    <label>URL: <span class="required">*</span></label>
+    <input type="text" id="url" placeholder="https://example.org/item">
+    <div class="error-msg" id="urlError">Please enter a valid URL starting with http:// or https://.</div>
+
+    <label>Access Date:</label>
+    <input type="date" id="accessDate">
+
+    <div id="buttonContainer">
+        <button onclick="generateCitation()">Generate Citation</button>
+        <button onclick="clearAll()">Clear All</button>
+    </div>
+
+    <div id="outputSection">
+        <h2>Generated Citation Preview:</h2>
+        <div id="citationPreview"></div>
+        <button id="copyButton" onclick="copyCitation()" disabled>Copy Citation</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
