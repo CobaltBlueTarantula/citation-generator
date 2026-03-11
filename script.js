@@ -55,7 +55,110 @@ function validateFields(titleVal, publisherVal, urlVal) {
 }
 
 
-// --- Citation ---
+// --- Autofill ---
+
+const PROXY = 'https://cors-proxy.cobaltbluetarantula.workers.dev/';
+
+async function fetchWithProxy(url) {
+    const response = await fetch(`${PROXY}?url=${encodeURIComponent(url)}`);
+    if (!response.ok) throw new Error(`Proxy returned ${response.status}`);
+    return await response.text();
+}
+
+function parseAndApplyDate(dateString) {
+    if (!dateString) return;
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return;
+    document.getElementById('day').value   = date.getUTCDate();
+    document.getElementById('month').value = MONTH_NAMES[date.getUTCMonth()];
+    document.getElementById('year').value  = date.getUTCFullYear();
+}
+
+function extractMetadata(doc) {
+    const getMeta   = (name)     => doc.querySelector(`meta[name="${name}"]`)?.getAttribute('content')?.trim() || null;
+    const getOG     = (property) => doc.querySelector(`meta[property="${property}"]`)?.getAttribute('content')?.trim() || null;
+    const getJsonLD = (key)      => {
+        for (const script of doc.querySelectorAll('script[type="application/ld+json"]')) {
+            try {
+                const data = JSON.parse(script.textContent);
+                const entries = Array.isArray(data) ? data : [data];
+                for (const entry of entries) {
+                    if (entry[key]) return entry[key];
+                }
+            } catch {}
+        }
+        return null;
+    };
+
+    // Author: try JSON-LD first, then meta tags
+    let author = null;
+    const ldAuthor = getJsonLD('author');
+    if (ldAuthor) {
+        author = Array.isArray(ldAuthor)
+            ? ldAuthor.map(a => a.name || a).join(', ')
+            : (ldAuthor.name || ldAuthor);
+    }
+    author = author || getMeta('author') || getMeta('article:author') || getOG('article:author');
+
+    // Title: OpenGraph is usually cleaner than <title> which often has site name appended
+    const title = getOG('og:title') || getJsonLD('headline') || getMeta('title') || doc.querySelector('title')?.textContent?.trim() || null;
+
+    // Publisher / site name
+    const publisher = getOG('og:site_name') || getJsonLD('publisher')?.name || getMeta('publisher') || null;
+
+    // Date: try multiple sources in order of reliability
+    const date = getJsonLD('datePublished') || getMeta('article:published_time') || getOG('article:published_time') || getMeta('date') || getMeta('pubdate') || null;
+
+    return { author, title, publisher, date };
+}
+
+function applyMetadata({ author, title, publisher, date }) {
+    if (author) {
+        const parts = author.split(/\s+/);
+        document.getElementById('firstName').value  = parts[0] || '';
+        document.getElementById('middleName').value = parts.length > 2 ? parts.slice(1, -1).join(' ') : '';
+        document.getElementById('lastName').value   = parts.length > 1 ? parts[parts.length - 1] : '';
+    }
+    if (title)     document.getElementById('title').value     = title;
+    if (publisher) document.getElementById('publisher').value = publisher;
+    if (date)      parseAndApplyDate(date);
+}
+
+async function autofill() {
+    const urlVal = document.getElementById('url').value.trim();
+
+    if (!urlVal || (!urlVal.startsWith('http://') && !urlVal.startsWith('https://'))) {
+        setFieldError('url', 'urlError', true);
+        return;
+    }
+    setFieldError('url', 'urlError', false);
+
+    const btn = document.getElementById('autofillButton');
+    const autofillError = document.getElementById('autofillError');
+    autofillError.style.display = 'none';
+    btn.textContent = 'Loading...';
+    btn.disabled = true;
+
+    try {
+        const html = await fetchWithProxy(urlVal);
+        const doc  = new DOMParser().parseFromString(html, 'text/html');
+
+        const metadata = extractMetadata(doc);
+        applyMetadata(metadata);
+
+        const anyFound = Object.values(metadata).some(v => v !== null);
+        if (!anyFound) autofillError.style.display = 'block';
+    } catch (err) {
+        console.error(err);
+        autofillError.style.display = 'block';
+    } finally {
+        btn.textContent = 'Autofill';
+        btn.disabled = false;
+    }
+}
+
+
+
 
 function buildAuthor(firstName, middleName, lastName) {
     if (!firstName && !middleName && !lastName) return '(Author missing)';
@@ -131,6 +234,7 @@ function clearAll() {
     document.getElementById('accessDate').value = today;
     document.getElementById('outputSection').style.display = 'none';
     document.getElementById('copyButton').disabled = true;
+    document.getElementById('autofillError').style.display = 'none';
     setFieldError('title', 'titleError', false);
     setFieldError('publisher', 'publisherError', false);
     setFieldError('url', 'urlError', false);
