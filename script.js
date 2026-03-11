@@ -8,11 +8,9 @@ document.getElementById('accessDate').value = today;
 
 function formatDateParts(day, month, year) {
     if (!year) return '(Date missing)';
-    let parts = [];
-    if (day) parts.push(('0' + day).slice(-2));
-    if (month) parts.push(month);
-    parts.push(year);
-    return parts.join(' ');
+    if (!month) return String(year);
+    if (!day) return `${month} ${year}`;
+    return `${('0' + day).slice(-2)} ${month} ${year}`;
 }
 
 function formatAccessDate(dateString) {
