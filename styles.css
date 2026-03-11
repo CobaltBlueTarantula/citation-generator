@@ -47,6 +47,14 @@ select {
     color: black;
 }
 
+select option[value=""] {
+    color: #999;
+}
+
+select option:not([value=""]) {
+    color: black;
+}
+
 select:has(option[value=""]:checked) {
     color: #999;
 }
