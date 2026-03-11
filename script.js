@@ -58,6 +58,7 @@ function validateFields(titleVal, publisherVal, urlVal) {
 // --- Autofill ---
 
 const PROXY = 'https://cors-proxy.cobaltbluetarantula.workers.dev/';
+const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 async function fetchWithProxy(url) {
     const response = await fetch(`${PROXY}?url=${encodeURIComponent(url)}`);
