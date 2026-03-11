@@ -132,6 +132,9 @@ async function autofill() {
     }
     setFieldError('url', 'urlError', false);
 
+    clearAll();
+    document.getElementById('url').value = urlVal; // restore url after clearAll wipes it
+
     const btn = document.getElementById('autofillButton');
     const autofillError = document.getElementById('autofillError');
     autofillError.style.display = 'none';
