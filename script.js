@@ -97,16 +97,36 @@ function extractMetadata(doc) {
             ? ldAuthor.map(a => a.name || a).join(', ')
             : (ldAuthor.name || ldAuthor);
     }
-    author = author || getMeta('author') || getMeta('article:author') || getOG('article:author');
+    author = author 
+        || getMeta('author') 
+        || getMeta('article:author') 
+        || getOG('article:author');
+        || getMeta('dc.creator')
+        || getMeta('byl')
+        || getMeta('parsely-author');
 
     // Title: OpenGraph is usually cleaner than <title> which often has site name appended
-    const title = getOG('og:title') || getJsonLD('headline') || getMeta('title') || doc.querySelector('title')?.textContent?.trim() || null;
+    const rawTitle = doc.querySelector('title')?.textContent?.trim() || null;
+    const cleanedTitle = rawTitle?.replace(/\s*[\|–\-—:]\s*.{2,40}$/, '') || rawTitle;
+    const title = getOG('og:title') || getJsonLD('headline') || getMeta('title') || cleanedTitle || null;
 
     // Publisher / site name
-    const publisher = getOG('og:site_name') || getJsonLD('publisher')?.name || getMeta('publisher') || null;
+    const publisher = getOG('og:site_name')
+        || getJsonLD('publisher')?.name
+        || getMeta('publisher')
+        || getMeta('application-name')
+        || getMeta('dc.publisher')
+        || null;
 
     // Date: try multiple sources in order of reliability
-    const date = getJsonLD('datePublished') || getMeta('article:published_time') || getOG('article:published_time') || getMeta('date') || getMeta('pubdate') || null;
+    const date = getJsonLD('datePublished')
+        || getMeta('article:published_time')
+        || getOG('article:published_time')
+        || getMeta('date') || getMeta('pubdate')
+        || getMeta('dc.date')
+        || getMeta('parsely-pub-date')
+        || doc.querySelector('time[datetime]')?.getAttribute('datetime')
+        || null;
 
     return { author, title, publisher, date };
 }
