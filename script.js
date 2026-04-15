@@ -100,7 +100,7 @@ function extractMetadata(doc) {
     author = author 
         || getMeta('author') 
         || getMeta('article:author') 
-        || getOG('article:author');
+        || getOG('article:author')
         || getMeta('dc.creator')
         || getMeta('byl')
         || getMeta('parsely-author');
